@@ -7,6 +7,8 @@ servicio concreto, prepara mensajes personalizados y los gestiona en un CRM.
 
 El agente **no inventa resultados** y **no envía mensajes**: todo envío lo aprueba y lo hace el usuario.
 
+> **¿No eres técnico?** Sigue la [guía paso a paso](docs/GUIA_PASO_A_PASO.md): se instala con doble clic en `iniciar`.
+
 ## Qué hace
 
 | Etapa | Módulo | Qué hace |
