@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Mensajes{% endblock %}
+{% block content %}
+<h1>Módulo de mensajes</h1>
+<p class="muted" style="margin:0">Borradores personalizados por prospecto. Nada se envía automáticamente: apruebas, envías tú mismo y registras el envío.</p>
+<form class="card row" method="get">
+  <label>Estado<select name="estado">{% for e in ['borrador','aprobado','enviado','descartado',''] %}<option value="{{ e }}" {{ 'selected' if estado == e }}>{{ e or 'Todos' }}</option>{% endfor %}</select></label>
+  <label>Canal<select name="canal"><option value="">Todos</option>{% for k, l in CANALES.items() %}<option value="{{ k }}" {{ 'selected' if canal == k }}>{{ l }}</option>{% endfor %}</select></label>
+  <button class="btn">Filtrar</button>
+</form>
+<div class="grid g2">
+{% for m in rows %}
+  <div class="msg">
+    <div class="row" style="justify-content:space-between">
+      <span><b><a href="/prospectos/{{ m.prospecto_id }}#mensajes">{{ m.prospecto_nombre }}</a></b> · {{ CANALES.get(m.canal, m.canal) }}</span>
+      <span class="small estado-{{ m.estado }}">{{ m.estado }}</span>
+    </div>
+    <div class="small muted">Necesidad: {{ m.necesidad or '–' }} · Servicio: {{ offer.service_name(m.servicio) }}</div>
+    {% if m.asunto %}<div><b>Asunto:</b> {{ m.asunto }}</div>{% endif %}
+    <pre>{{ m.cuerpo }}</pre>
+    <div class="row">
+      {% if m.estado == 'borrador' and m.canal in ['whatsapp','correo','linkedin'] %}<form method="post" action="/mensajes/{{ m.id }}/aprobar"><button class="btn sm">Aprobar</button></form>{% endif %}
+      {% if m.estado == 'aprobado' %}<form method="post" action="/mensajes/{{ m.id }}/enviado"><button class="btn sm">Marcar como enviado</button></form>{% endif %}
+      <a class="btn sm sec" href="/prospectos/{{ m.prospecto_id }}#mensajes">Editar en la ficha</a>
+      {% if m.estado not in ['enviado','descartado'] %}<form method="post" action="/mensajes/{{ m.id }}/descartar"><button class="btn sm sec">Descartar</button></form>{% endif %}
+      <span class="tag">{{ m.generado_por }} · {{ m.creado }}</span>
+    </div>
+  </div>
+{% else %}<p class="muted">No hay mensajes en este estado.</p>{% endfor %}
+</div>
+{% endblock %}

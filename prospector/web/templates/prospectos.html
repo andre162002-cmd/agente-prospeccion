@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_macros.html" import score_pill %}
+{% block title %}Prospectos{% endblock %}
+{% block content %}
+<div class="row" style="justify-content:space-between">
+  <h1>Prospectos <span class="muted" style="font-size:16px">({{ total }})</span></h1>
+  <div class="row">
+    <a class="btn sec" href="/exportar.csv?{{ qs }}">Exportar CSV</a>
+    <a class="btn sec" href="/exportar.xlsx?{{ qs }}">Exportar Excel</a>
+    <a class="btn" href="/prospectos/nuevo">Agregar empresa</a>
+  </div>
+</div>
+
+<form class="card row" method="get" action="/prospectos">
+  <label>Buscar empresa<input name="q" value="{{ f.q or '' }}" placeholder="Nombre o dirección"></label>
+  <label>Sector<select name="sector"><option value="">Todos</option>{% for s in sectores %}<option value="{{ s }}" {{ 'selected' if f.sector == s }}>{{ offer.sector_name(s) }}</option>{% endfor %}</select></label>
+  <label>Ciudad<select name="ciudad"><option value="">Todas</option>{% for c in ciudades %}<option {{ 'selected' if f.ciudad == c }}>{{ c }}</option>{% endfor %}</select></label>
+  <label>Estado<select name="estado"><option value="">Todos</option>{% for e in ESTADOS %}<option {{ 'selected' if f.estado == e }}>{{ e }}</option>{% endfor %}</select></label>
+  <label>Clasificación<select name="clasificacion"><option value="">Todas</option>{% for c in clasificaciones %}<option {{ 'selected' if f.clasificacion == c }}>{{ c }}</option>{% endfor %}</select></label>
+  <label>Servicio<select name="servicio"><option value="">Todos</option>{% for s in servicios %}<option value="{{ s }}" {{ 'selected' if f.servicio == s }}>{{ offer.service_name(s) }}</option>{% endfor %}</select></label>
+  <label>Ordenar por<select name="orden">{% for k, l in [('puntaje','Puntaje'),('nombre','Nombre'),('fecha','Fecha de investigación'),('actualizacion','Última actualización'),('ciudad','Ciudad')] %}<option value="{{ k }}" {{ 'selected' if orden == k }}>{{ l }}</option>{% endfor %}</select></label>
+  <label style="flex-direction:row;display:flex;gap:6px;align-items:center"><input type="checkbox" name="excluidos" value="1" {{ 'checked' if f.incluir_excluidos }}> Incluir descartados</label>
+  <button class="btn">Filtrar</button> <a href="/prospectos" class="small">Limpiar</a>
+</form>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Puntaje</th><th>Empresa</th><th>Ciudad</th><th>Contacto</th><th>Servicio recomendado</th><th>Necesidad potencial</th><th>Estado</th></tr>
+  {% for p in rows %}
+  <tr>
+    <td>{{ score_pill(p) }}<div class="muted small">{{ p.clasificacion or '' }}</div></td>
+    <td><a href="/prospectos/{{ p.id }}"><b>{{ p.nombre }}</b></a><div class="muted small">{{ offer.sector_name(p.sector) }}{% if (p.num_sedes or 1) > 1 %} · {{ p.num_sedes }} sedes{% endif %}{% if p.excluido %} · excluido{% endif %}</div></td>
+    <td>{{ p.ciudad or '–' }}</td>
+    <td class="small">{% if p.contacto_nombre %}{{ p.contacto_nombre }}{% if p.contacto_cargo %} ({{ p.contacto_cargo }}){% endif %}<br>{% endif %}
+      {% if p.whatsapp %}WhatsApp {{ p.whatsapp }}<br>{% endif %}{% if p.telefono %}Tel. {{ p.telefono }}<br>{% endif %}{% if p.correo %}{{ p.correo }}<br>{% endif %}{% if p.instagram %}<a href="{{ p.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
+      {% if not (p.whatsapp or p.telefono or p.correo or p.instagram) %}<span class="muted">No disponible</span>{% endif %}</td>
+    <td class="small">{{ offer.service_name(p.servicio_recomendado) }}</td>
+    <td class="small">{{ p.problema_potencial or '' }}</td>
+    <td class="small">{{ p.estado_comercial }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="muted">No hay prospectos con estos filtros.</td></tr>{% endfor %}
+</table>
+</div>
+{% if paginas > 1 %}
+<div class="row">{% for n in range(1, paginas + 1) %}<a class="btn sm {{ '' if n == pagina else 'sec' }}" href="/prospectos?{{ qs }}&pagina={{ n }}">{{ n }}</a>{% endfor %}</div>
+{% endif %}
+{% endblock %}

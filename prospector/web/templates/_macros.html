@@ -1,0 +1,13 @@
+{% macro score_pill(p) -%}
+{% set s = p.puntaje or 0 %}
+<span class="pill score {{ 's80' if s >= 80 else 's60' if s >= 60 else 's40' if s >= 40 else 's0' }}">{{ p.puntaje|int if p.puntaje is not none else '–' }}</span>
+{%- endmacro %}
+
+{% macro hbars(items) -%}
+{% set mx = (items|map(attribute=1)|max) if items else 1 %}
+<div class="bars">
+{% for label, n in items %}
+  <div class="bar"><span>{{ label }}</span><div class="t"><i style="width:{{ (n / (mx or 1) * 100)|round(1) }}%"></i></div><span class="v">{{ n }}</span></div>
+{% else %}<p class="muted small">Sin datos todavía.</p>{% endfor %}
+</div>
+{%- endmacro %}

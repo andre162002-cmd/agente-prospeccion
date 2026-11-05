@@ -1,0 +1,289 @@
+# =====================================================================
+# OFERTA COMERCIAL – Finanzas a la carta (Andrés Piedrahita Cardona)
+# Fuente: "Propuesta comercial – Diagnóstico de Rentabilidad" y
+# "Mapa Finanzas a la carta" (2 nov 2026). Versión validada por el
+# usuario el 5 nov 2026 como definitiva frente al Plan maestro (25 oct).
+#
+# Este archivo es la ÚNICA fuente de verdad del agente sobre qué
+# vendemos y a quién. Edítalo aquí; no hace falta tocar el código.
+# =====================================================================
+
+marca:
+  nombre: "Finanzas a la carta"
+  responsable: "Andrés Piedrahita Cardona"
+  posicionamiento: "Finanzas para cafeterías y restaurantes · Medellín"
+  promesa: "Te ayudo a saber qué productos te dejan plata"
+  credenciales:
+    - "Más de 3 años en contabilidad y finanzas (comercio y empresa de tecnología)"
+    - "Ingeniería Financiera (ITM, último semestre) y tecnólogo en Análisis de Costos y Presupuestos"
+    - "Participó en la creación y gestión de un café bar"
+  # Completa estos datos para que aparezcan en los mensajes:
+  whatsapp: "[tu número]"
+  instagram: "[@tu_usuario]"
+  correo: "[tu correo]"
+  linkedin: "Andrés Piedrahita Cardona"
+
+# Lo que NO vendemos (el agente nunca debe ofrecerlo)
+fuera_de_alcance:
+  - "Contabilidad, declaraciones de impuestos, nómina o trámites ante la DIAN"
+  - "Firma o certificación de estados financieros (requiere contador público)"
+  - "Asesoría legal, laboral o tributaria"
+
+# ---------------------------------------------------------------------
+# Servicios. `id` se usa en el CRM; `sectores` dice a qué sectores aplica.
+# ---------------------------------------------------------------------
+servicios:
+  - id: chequeo_gratis
+    nombre: "Chequeo de rentabilidad gratis"
+    tipo: entrada
+    precio: "Sin costo"
+    descripcion: "45 minutos: se costean 3 productos de la carta en vivo, sin compromiso."
+    sectores: [cafeteria, restaurante, panaderia, bar, comidas_rapidas, heladeria]
+  - id: diagnostico_rentabilidad
+    nombre: "Diagnóstico de Rentabilidad"
+    tipo: principal
+    precio: "$1.800.000 (piloto $900.000)"
+    duracion: "2 a 3 semanas; 3 a 4 horas del dueño"
+    descripcion: >-
+      Costeo de hasta 25 productos, food cost y margen por producto, matriz de
+      menú, precio sugerido por producto, punto de equilibrio en ventas por día,
+      plan de acción de 5 a 10 medidas y herramienta de costeo en Excel.
+    resuelve:
+      - "No saber cuánto deja realmente cada producto"
+      - "Precios fijados mirando a la competencia y no los costos"
+      - "Alzas de insumos que se comen el margen"
+      - "No tener una meta de venta diaria (punto de equilibrio)"
+    sectores: [cafeteria, restaurante, panaderia, bar, comidas_rapidas, heladeria]
+  - id: control_caja
+    nombre: "Control de Caja y Flujo de Caja"
+    tipo: continuidad
+    precio: "Por cotizar"
+    descripcion: "Orden de la caja diaria, flujo de caja y proyección para anticipar meses apretados."
+    resuelve:
+      - "Se vende mucho pero a fin de mes no se ve la plata"
+      - "Pagos a proveedores y nómina que aprietan la caja"
+    sectores: [cafeteria, restaurante, panaderia, bar, comidas_rapidas, heladeria, comercio_minorista, comercio_mayorista]
+  - id: acompanamiento_mensual
+    nombre: "Acompañamiento Financiero Mensual"
+    tipo: continuidad
+    precio: "Desde $800.000/mes (mínimo 3 meses)"
+    descripcion: "Seguimiento mensual de costos, márgenes, caja y metas, con una reunión de resultados."
+    resuelve:
+      - "Varias sedes sin una vista consolidada de márgenes y caja"
+      - "Crecimiento sin control de costos"
+    sectores: [cafeteria, restaurante, panaderia, bar, comidas_rapidas, heladeria, comercio_minorista, comercio_mayorista]
+  - id: proyectos_adicionales
+    nombre: "Proyectos adicionales (presupuesto, modelo para crédito, tablero Power BI)"
+    tipo: adicional
+    precio: "Por cotización"
+    descripcion: "Presupuesto anual, modelo financiero para crédito o inversión, tablero gerencial."
+    resuelve:
+      - "Abrir una nueva sede o pedir un crédito sin un modelo financiero"
+    sectores: [cafeteria, restaurante, panaderia, bar, comidas_rapidas, heladeria, comercio_minorista, comercio_mayorista]
+  # Ángulo para la expansión a comercio (Plan maestro, Paquete C). Se
+  # activa solo cuando se prospecta comercio; no es la oferta principal.
+  - id: costos_inventario_comercio
+    nombre: "Diagnóstico de márgenes e inventario para comercio"
+    tipo: principal
+    precio: "Por cotización"
+    descripcion: "Margen por línea de producto, rotación de inventario, cartera y punto de equilibrio."
+    resuelve:
+      - "Inventario inmovilizado o sin control"
+      - "No saber qué líneas de producto dejan margen"
+      - "Cartera y cuentas por pagar sin seguimiento"
+    sectores: [comercio_minorista, comercio_mayorista]
+
+# ---------------------------------------------------------------------
+# Sectores. `prioridad`: 1 = nicho actual, 2 = expansión evaluada después
+# de los 90 días, 3 = fuera de foco. `tipos_google` mapea con Google Places.
+# `necesidades`: necesidades POTENCIALES típicas del sector (no afirmaciones
+# sobre una empresa concreta) y el servicio que las atiende.
+# ---------------------------------------------------------------------
+sectores:
+  cafeteria:
+    nombre: "Cafetería"
+    prioridad: 1
+    palabras: [cafeteria, cafetería, cafe, café, coffee, tienda de cafe, cafe bar]
+    tipos_google: [cafe, coffee_shop, cafeteria, tea_house]
+    consulta_base: "cafeterías"
+    necesidades:
+      - {necesidad: "Costo real por bebida y por producto de vitrina", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Precios desactualizados frente al alza del café y la leche", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Meta de venta diaria (punto de equilibrio)", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Control de caja diaria", servicio: control_caja}
+  restaurante:
+    nombre: "Restaurante"
+    prioridad: 1
+    palabras: [restaurante, restaurantes, comida, almuerzos, gastrobar, cocina, parrilla, asadero, pizzeria, pizzería, sushi]
+    tipos_google: [restaurant, brunch_restaurant, breakfast_restaurant, pizza_restaurant, steak_house, seafood_restaurant, sushi_restaurant, vegetarian_restaurant, mexican_restaurant, italian_restaurant, japanese_restaurant, latin_american_restaurant, colombian_restaurant, barbecue_restaurant, hamburger_restaurant]
+    consulta_base: "restaurantes independientes"
+    necesidades:
+      - {necesidad: "Food cost por plato y margen de la carta", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Platos que se venden mucho pero dejan poco (matriz de menú)", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Impacto de las comisiones de apps de domicilios en el margen", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Flujo de caja con nómina y proveedores", servicio: control_caja}
+  panaderia:
+    nombre: "Panadería / pastelería"
+    prioridad: 1
+    palabras: [panaderia, panadería, pasteleria, pastelería, reposteria, repostería, bakery]
+    tipos_google: [bakery, confectionery, dessert_shop]
+    consulta_base: "panaderías y pastelerías"
+    necesidades:
+      - {necesidad: "Costo por unidad con mermas de producción", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Precios frente al alza de harina, huevo y mantequilla", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Control de caja diaria", servicio: control_caja}
+  bar:
+    nombre: "Bar / café bar"
+    prioridad: 1
+    palabras: [bar, bares, cafe bar, gastrobar, cerveceria, cervecería, coctel, coctelería, pub]
+    tipos_google: [bar, pub, wine_bar, bar_and_grill]
+    consulta_base: "bares y café bares"
+    necesidades:
+      - {necesidad: "Costo por cóctel y margen por bebida", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Control de inventario de licores y mermas", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Caja con ventas concentradas en fines de semana", servicio: control_caja}
+  comidas_rapidas:
+    nombre: "Comidas rápidas"
+    prioridad: 1
+    palabras: [comidas rapidas, comidas rápidas, hamburguesas, perros, salchipapas, arepas, empanadas, fast food]
+    tipos_google: [fast_food_restaurant, sandwich_shop, meal_takeaway, meal_delivery]
+    consulta_base: "comidas rápidas"
+    necesidades:
+      - {necesidad: "Margen por combo y por producto", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Rentabilidad real de las ventas por domicilios", servicio: diagnostico_rentabilidad}
+  heladeria:
+    nombre: "Heladería / postres"
+    prioridad: 1
+    palabras: [heladeria, heladería, helados, postres, waffles, crepes]
+    tipos_google: [ice_cream_shop, dessert_restaurant]
+    consulta_base: "heladerías y postres"
+    necesidades:
+      - {necesidad: "Costo por porción y margen por producto", servicio: diagnostico_rentabilidad}
+      - {necesidad: "Estacionalidad de ventas y caja", servicio: control_caja}
+  comercio_minorista:
+    nombre: "Comercio minorista"
+    prioridad: 2
+    palabras: [tienda, almacen, almacén, minimercado, comercio, comercial, empresas comerciales, boutique, ferreteria, ferretería, papeleria, papelería, drogueria, droguería, minorista]
+    tipos_google: [store, clothing_store, hardware_store, convenience_store, grocery_store, home_goods_store, pet_store, book_store, furniture_store, shoe_store, pharmacy]
+    consulta_base: "tiendas y comercios"
+    necesidades:
+      - {necesidad: "Margen por línea de producto", servicio: costos_inventario_comercio}
+      - {necesidad: "Rotación de inventario y producto quieto", servicio: costos_inventario_comercio}
+      - {necesidad: "Flujo de caja y cuentas por pagar", servicio: control_caja}
+  comercio_mayorista:
+    nombre: "Comercio mayorista / distribuidor"
+    prioridad: 2
+    palabras: [distribuidor, distribuidores, distribuidora, mayorista, mayoristas, importadora, comercializadora, al por mayor]
+    tipos_google: [wholesaler]
+    consulta_base: "distribuidoras y mayoristas"
+    necesidades:
+      - {necesidad: "Cartera por cliente y días de cobro", servicio: costos_inventario_comercio}
+      - {necesidad: "Margen por cliente y por línea", servicio: costos_inventario_comercio}
+      - {necesidad: "Presupuesto y proyección de caja", servicio: proyectos_adicionales}
+
+# ---------------------------------------------------------------------
+# Cliente ideal (ICP) – Plan maestro §6 + Mapa (nicho gastronómico)
+# ---------------------------------------------------------------------
+icp:
+  descripcion: >-
+    Negocio gastronómico independiente en Medellín y el Valle de Aburrá, con
+    al menos 12 meses operando, un dueño o administrador que decide, carta de
+    precio medio y capacidad para pagar un diagnóstico y luego una mensualidad.
+  decisores: [Propietario, Socio fundador, Gerente general, Administrador del punto, Director administrativo y financiero]
+  # Cadenas y franquicias grandes: tienen área financiera propia → se descartan.
+  max_sedes_independiente: 8
+  cadenas_excluidas:
+    - "juan valdez"
+    - "starbucks"
+    - "tostao"
+    - "oma"
+    - "dunkin"
+    - "crepes & waffles"
+    - "crepes y waffles"
+    - "el corral"
+    - "frisby"
+    - "kfc"
+    - "mcdonald's"
+    - "mcdonalds"
+    - "burger king"
+    - "subway"
+    - "domino's"
+    - "dominos"
+    - "papa john's"
+    - "presto"
+    - "jeno's pizza"
+    - "kokoriko"
+    - "hornitos"
+    - "pan pa' ya"
+    - "dollar city"
+    - "d1"
+    - "ara"
+    - "exito"
+    - "éxito"
+    - "olimpica"
+    - "carulla"
+  señales_descarte:
+    - "Solo busca el precio más bajo"
+    - "No tiene contabilidad ni acepta organizarla"
+    - "Quiere que firmes declaraciones o actúes como revisor fiscal"
+    - "No hay un interlocutor claro que decida"
+
+# ---------------------------------------------------------------------
+# Geografía. puntaje: 1.0 = zona prioritaria.
+# ---------------------------------------------------------------------
+geografia:
+  region_por_defecto: "Medellín, Antioquia, Colombia"
+  centro: {lat: 6.2442, lng: -75.5812}
+  radio_m: 20000
+  ciudades:
+    "Medellín": 1.0
+    "Envigado": 0.85
+    "Sabaneta": 0.85
+    "Itagüí": 0.8
+    "Bello": 0.75
+    "La Estrella": 0.7
+    "Caldas": 0.6
+    "Copacabana": 0.6
+    "Girardota": 0.55
+    "Barbosa": 0.5
+  puntaje_resto_antioquia: 0.4
+  puntaje_resto_colombia: 0.2
+  puntaje_otro_pais: 0.1
+
+# ---------------------------------------------------------------------
+# Calificación (0–100). Pesos configurables por servicio objetivo.
+# ---------------------------------------------------------------------
+calificacion:
+  pesos_por_defecto:
+    icp: 25
+    necesidad: 25
+    capacidad: 15
+    accesibilidad: 15
+    crecimiento: 10
+    geografia: 10
+  pesos_por_servicio:
+    # Para vender acompañamiento mensual pesa más la capacidad de pago.
+    acompanamiento_mensual: {icp: 20, necesidad: 25, capacidad: 25, accesibilidad: 10, crecimiento: 10, geografia: 10}
+    # Para control de caja pesan más las señales de volumen/crecimiento.
+    control_caja: {icp: 25, necesidad: 25, capacidad: 15, accesibilidad: 10, crecimiento: 15, geografia: 10}
+  clasificacion:
+    - {min: 80, nombre: "Prospecto prioritario"}
+    - {min: 60, nombre: "Prospecto interesante"}
+    - {min: 40, nombre: "Prospecto para investigar"}
+    - {min: 0, nombre: "Baja prioridad"}
+
+# ---------------------------------------------------------------------
+# Contacto y cumplimiento (Ley 1581 de 2012)
+# ---------------------------------------------------------------------
+contacto:
+  finalidad: >-
+    Prospección comercial B2B: ofrecer servicios de análisis financiero y de
+    costos a establecimientos de comercio, usando solo canales de contacto
+    empresariales publicados por el propio negocio.
+  dias_entre_contactos: 7
+  max_intentos_sin_respuesta: 3
+  # Pasado este tiempo sin actividad, los prospectos descartados se borran.
+  dias_retencion_descartados: 180
+  dias_retencion_sin_contacto: 365
+  # Orden de preferencia de canal (Mapa: visitas, WhatsApp, Instagram)
+  canales_preferidos: [whatsapp, visita, instagram, correo, telefono, linkedin]

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Agregar empresa{% endblock %}
+{% block content %}
+<h1>Agregar empresa</h1>
+<form method="post" action="/prospectos/nuevo" class="card grid g3">
+  <label>Nombre comercial *<input name="nombre" required></label>
+  <label>Sector<select name="sector"><option value="">Detectar automáticamente</option>{% for sid, s in offer.sectors.items() %}<option value="{{ sid }}">{{ s.nombre }}</option>{% endfor %}</select></label>
+  <label>Ciudad<input name="ciudad" value="Medellín"></label>
+  <label>Dirección<input name="direccion"></label>
+  <label>Sitio web<input name="sitio_web"></label>
+  <label>Teléfono comercial<input name="telefono"></label>
+  <label>WhatsApp empresarial<input name="whatsapp"></label>
+  <label>Correo corporativo<input name="correo"></label>
+  <label>Instagram (URL)<input name="instagram"></label>
+  <label>Nombre del responsable<input name="contacto_nombre"></label>
+  <label>Cargo<input name="contacto_cargo"></label>
+  <label>Fuente del dato *<input name="fuente" required placeholder="Ej.: Visita al local, referido, feria"></label>
+  <label>URL de la fuente (si es pública)<input name="url_fuente"></label>
+  <label style="display:flex;gap:6px;align-items:center;flex-direction:row"><input type="checkbox" name="investigar" value="1" checked> Investigar su sitio web y preparar mensajes</label>
+  <div><button class="btn">Guardar</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import score_pill, hbars %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row" style="justify-content:space-between">
+  <div><h1>Dashboard comercial</h1><p class="muted small" style="margin:4px 0 0">{{ offer.brand.posicionamiento }}</p></div>
+  <a class="btn" href="/buscar">Nueva búsqueda</a>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><b>{{ kpis.total }}</b><span>Empresas investigadas</span></div>
+  <div class="kpi"><b>{{ kpis.nuevos }}</b><span>Leads nuevos</span></div>
+  <div class="kpi"><b>{{ kpis.calificados }}</b><span>Calificados (60+)</span></div>
+  <div class="kpi"><b>{{ kpis.prioritarios }}</b><span>Prioritarios (80+)</span></div>
+  <div class="kpi"><b>{{ kpis.contactados }}</b><span>En proceso comercial</span></div>
+  <div class="kpi"><b>{{ kpis.clientes }}</b><span>Clientes ganados</span></div>
+  <div class="kpi"><b>{{ kpis.borradores }}</b><span>Mensajes por revisar</span></div>
+  <div class="kpi"><b>{{ kpis.descartados }}</b><span>Descartados / excluidos</span></div>
+</div>
+
+<div class="grid g2">
+  <section class="card"><h2>Prospectos por sector</h2>{{ hbars(por_sector) }}</section>
+  <section class="card"><h2>Prospectos por ciudad</h2>{{ hbars(por_ciudad) }}</section>
+  <section class="card"><h2>Estado del proceso comercial</h2>{{ hbars(embudo) }}</section>
+  <section class="card">
+    <h2>Evolución de la generación de leads</h2>
+    {% if semanas %}
+    {% set mx = semanas|map(attribute=1)|max %}
+    <div class="cols">{% for w, n in semanas %}<div style="height:{{ (n / mx * 100)|round }}%"><span>{{ n }}</span></div>{% endfor %}</div>
+    <div class="cols-l">{% for w, n in semanas %}<span>S{{ w.split('-')[1] }}</span>{% endfor %}</div>
+    <p class="muted small">Leads registrados por semana (últimas 12 semanas).</p>
+    {% else %}<p class="muted small">Sin datos todavía.</p>{% endif %}
+    <h3 style="margin-top:14px">Por clasificación</h3>{{ hbars(por_clasif) }}
+  </section>
+</div>
+
+<div class="grid g2">
+<section class="card">
+  <h2>Mejores prospectos</h2>
+  <table><tr><th>Puntaje</th><th>Empresa</th><th>Servicio</th><th>Estado</th></tr>
+  {% for p in top %}
+    <tr><td>{{ score_pill(p) }}</td><td><a href="/prospectos/{{ p.id }}">{{ p.nombre }}</a><div class="muted small">{{ offer.sector_name(p.sector) }} · {{ p.ciudad or '' }}</div></td>
+    <td class="small">{{ offer.service_name(p.servicio_recomendado) }}</td><td class="small">{{ p.estado_comercial }}</td></tr>
+  {% else %}<tr><td colspan="4" class="muted">Aún no hay prospectos. Empieza con una <a href="/buscar">búsqueda</a> o una <a href="/importar">importación</a>.</td></tr>{% endfor %}
+  </table>
+</section>
+<section class="card">
+  <h2>Últimas corridas del agente</h2>
+  <table><tr><th>#</th><th>Instrucción</th><th>Estado</th></tr>
+  {% for r in runs %}
+    <tr><td><a href="/corridas/{{ r.id }}">{{ r.id }}</a></td><td class="small">{{ r.instruccion[:110] }}</td><td class="small">{{ r.estado }}</td></tr>
+  {% else %}<tr><td colspan="3" class="muted">Sin corridas.</td></tr>{% endfor %}
+  </table>
+</section>
+</div>
+{% endblock %}

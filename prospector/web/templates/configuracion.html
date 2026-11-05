@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Configuración{% endblock %}
+{% block content %}
+<h1>Configuración</h1>
+<div class="grid g2">
+<section class="card">
+  <h2>Fuentes y servicios conectados</h2>
+  <dl class="kv">
+    <dt>Google Places API</dt><dd>{% if settings.places_enabled %}<span class="pill s80">Configurada</span>{% else %}<span class="pill s0">Sin clave</span> <span class="small">Agrega <code>GOOGLE_PLACES_API_KEY</code> en <code>.env</code></span>{% endif %}</dd>
+    <dt>Claude (IA)</dt><dd>{% if llm_ok %}<span class="pill s80">Activo</span> <span class="small">{{ settings.claude_model }} · esfuerzo {{ settings.claude_effort }}</span>{% else %}<span class="pill s0">Inactivo</span> <span class="small">Se usan reglas y plantillas. Agrega <code>ANTHROPIC_API_KEY</code> en <code>.env</code></span>{% endif %}</dd>
+    <dt>Sitios web</dt><dd>Activo · respeta robots.txt · hasta {{ settings.max_pages_per_site }} páginas por sitio</dd>
+    <dt>Base de datos</dt><dd class="small">{{ settings.db_path }}</dd>
+    <dt>Oferta</dt><dd class="small">{{ settings.offer_path }}</dd>
+  </dl>
+</section>
+<section class="card small">
+  <h2>Cliente ideal</h2>
+  <p>{{ offer.icp.descripcion }}</p>
+  <p><b>Decisores:</b> {{ offer.icp.decisores|join(', ') }}</p>
+  <p><b>Fuera de alcance:</b> {{ offer.raw.fuera_de_alcance|join('; ') }}</p>
+</section>
+</div>
+<section class="tablewrap">
+  <table><tr><th>Servicio</th><th>Tipo</th><th>Precio</th><th>Sectores</th></tr>
+  {% for s in offer.services.values() %}<tr><td><b>{{ s.nombre }}</b><div class="small muted">{{ s.descripcion }}</div></td><td>{{ s.tipo }}</td><td>{{ s.precio }}</td><td class="small">{% for x in s.sectores %}{{ offer.sector_name(x) }}{{ ', ' if not loop.last }}{% endfor %}</td></tr>{% endfor %}
+  </table>
+</section>
+<section class="grid g2">
+  <div class="card small"><h2>Pesos de calificación</h2>
+    <table><tr><th>Criterio</th><th>Por defecto</th>{% for sid in offer.raw.calificacion.pesos_por_servicio %}<th>{{ offer.service_name(sid) }}</th>{% endfor %}</tr>
+    {% for k, v in offer.weights().items() %}<tr><td>{{ k }}</td><td>{{ v }}</td>{% for sid in offer.raw.calificacion.pesos_por_servicio %}<td>{{ offer.weights(sid)[k] }}</td>{% endfor %}</tr>{% endfor %}</table>
+  </div>
+  <div class="card small"><h2>Sectores</h2>
+    <table><tr><th>Sector</th><th>Prioridad</th></tr>{% for sid, s in offer.sectors.items() %}<tr><td>{{ s.nombre }}</td><td>{{ 'Nicho actual' if s.prioridad == 1 else 'Expansión' if s.prioridad == 2 else 'Fuera de foco' }}</td></tr>{% endfor %}</table>
+  </div>
+</section>
+<p class="small muted">Para cambiar la oferta, los sectores, las ciudades o los pesos, edita <code>config/oferta.yaml</code>. Los cambios se aplican sin reiniciar.</p>
+{% endblock %}

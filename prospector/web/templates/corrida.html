@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "_macros.html" import score_pill %}
+{% block title %}Corrida #{{ r.id }}{% endblock %}
+{% block head %}{% if r.estado not in ('completada', 'error') %}<meta http-equiv="refresh" content="4">{% endif %}{% endblock %}
+{% block content %}
+<div>
+  <h1>Corrida #{{ r.id }} · {{ r.estado }}</h1>
+  <p class="muted" style="margin:4px 0 0">“{{ r.instruccion }}”</p>
+</div>
+{% if r.error %}<div class="flash err">{{ r.error }}</div>{% endif %}
+
+<div class="grid g2">
+<section class="card">
+  <h2>Plan de investigación</h2>
+  {% if r.plan %}
+  <dl class="kv">
+    <dt>Interpretado por</dt><dd>{{ r.plan.interpretado_por }}</dd>
+    <dt>Cantidad pedida</dt><dd>{{ r.plan.cantidad }}</dd>
+    <dt>Sectores</dt><dd>{% for s in r.plan.sectores %}{{ offer.sector_name(s) }}{{ ', ' if not loop.last }}{% endfor %}</dd>
+    <dt>Ciudades</dt><dd>{{ r.plan.ciudades|join(', ') }}</dd>
+    <dt>Servicio objetivo</dt><dd>{{ offer.service_name(r.plan.servicio_objetivo) }}</dd>
+    {% if r.plan.min_sedes > 1 %}<dt>Filtro</dt><dd>Mínimo {{ r.plan.min_sedes }} sedes</dd>{% endif %}
+    {% if r.plan.palabras_clave %}<dt>Palabras clave</dt><dd>{{ r.plan.palabras_clave|join(', ') }}</dd>{% endif %}
+    <dt>Consultas</dt><dd>{{ r.plan.consultas|length }}</dd>
+    {% if r.plan.justificacion %}<dt>Criterio</dt><dd class="small">{{ r.plan.justificacion }}</dd>{% endif %}
+  </dl>
+  {% else %}<p class="muted">Planificando…</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>Informe</h2>
+  {% set x = r.reporte or {} %}
+  {% if r.estado in ('completada', 'error') %}
+  <dl class="kv">
+    <dt>Resultados de la fuente</dt><dd>{{ x.resultados_fuente or 0 }} (en {{ x.consultas_ejecutadas or 0 }} consultas; {{ x.solicitudes_google or 0 }} solicitudes a Google)</dd>
+    <dt>Empresas nuevas</dt><dd><b>{{ x.empresas_nuevas or 0 }}</b> de {{ x.solicitadas or 0 }} pedidas</dd>
+    <dt>Sedes agrupadas</dt><dd>{{ x.sedes_agregadas or 0 }}</dd>
+    <dt>Ya estaban en el CRM</dt><dd>{{ x.ya_existian or 0 }}</dd>
+    <dt>Verificadas</dt><dd>{{ x.verificadas or 0 }} <span class="muted small">(en operación según Google y con un canal de contacto publicado)</span></dd>
+    <dt>Califican (60+)</dt><dd><b>{{ x.calificadas_total or 0 }}</b> · prioritarias: {{ x.prioritarias or 0 }}</dd>
+    <dt>Requieren investigación</dt><dd>{{ x.por_investigar or 0 }} <span class="muted small">(40–59)</span></dd>
+    <dt>Baja prioridad</dt><dd>{{ x.baja_prioridad or 0 }}</dd>
+    <dt>Descartadas</dt><dd>{{ x.descartadas_icp or 0 }} por cliente ideal · {{ x.cerradas or 0 }} cerradas · {{ x.en_lista_exclusion or 0 }} en lista de exclusión{% if x.fuera_de_filtro %} · {{ x.fuera_de_filtro }} fuera del filtro{% endif %}</dd>
+    <dt>Sitios web</dt><dd>{{ x.sitios_revisados or 0 }} revisados; {{ x.sitios_bloqueados_o_fallidos or 0 }} bloqueados o sin respuesta</dd>
+    <dt>Borradores de mensajes</dt><dd>{{ x.mensajes_preparados or 0 }} <a href="/mensajes">revisar</a></dd>
+    {% if x.uso_ia and x.uso_ia.modelo %}<dt>Uso de IA</dt><dd class="small">{{ x.uso_ia.llamadas }} llamadas a {{ x.uso_ia.modelo }} · {{ x.uso_ia.tokens_entrada }} tokens de entrada / {{ x.uso_ia.tokens_salida }} de salida</dd>{% endif %}
+  </dl>
+  {% for a in x.advertencias or [] %}<p class="note">{{ a }}</p>{% endfor %}
+  {% else %}<p class="muted">En curso… esta página se actualiza sola.</p>{% endif %}
+</section>
+</div>
+
+<section class="card"><h2>Bitácora</h2><pre class="log">{{ r.log or '…' }}</pre></section>
+
+{% if prospectos %}
+<section class="tablewrap">
+  <table>
+    <tr><th>Puntaje</th><th>Empresa</th><th>Ciudad</th><th>Servicio recomendado</th><th>Contacto</th><th>Estado</th></tr>
+    {% for p in prospectos %}
+    <tr><td>{{ score_pill(p) }}</td><td><a href="/prospectos/{{ p.id }}">{{ p.nombre }}</a><div class="muted small">{{ offer.sector_name(p.sector) }}{% if (p.num_sedes or 1) > 1 %} · {{ p.num_sedes }} sedes{% endif %}</div></td>
+    <td>{{ p.ciudad or '' }}</td><td class="small">{{ offer.service_name(p.servicio_recomendado) }}</td>
+    <td class="small">{{ p.whatsapp or p.telefono or p.correo or p.instagram or '–' }}</td><td class="small">{{ p.estado_comercial }}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endif %}
+{% endblock %}

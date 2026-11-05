@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Duplicados{% endblock %}
+{% block content %}
+<h1>Posibles duplicados</h1>
+<p class="muted" style="margin:0">El agente ya evita duplicados exactos (mismo lugar de Google, dominio, teléfono o nombre) y agrupa las sedes de una misma empresa. Aquí aparecen nombres muy parecidos para que decidas tú.</p>
+<div class="tablewrap">
+<table>
+  <tr><th>Similitud</th><th>Registro A</th><th>Registro B</th><th>Acción</th></tr>
+  {% for x in pares %}
+  <tr><td class="score">{{ (x.similitud * 100)|int }}%</td>
+    <td><a href="/prospectos/{{ x.a.id }}">{{ x.a.nombre }}</a><div class="small muted">{{ x.a.ciudad or '' }} · {{ x.a.direccion or '' }}</div></td>
+    <td><a href="/prospectos/{{ x.b.id }}">{{ x.b.nombre }}</a><div class="small muted">{{ x.b.ciudad or '' }} · {{ x.b.direccion or '' }}</div></td>
+    <td><form method="post" action="/duplicados/fusionar" class="row" onsubmit="return confirm('¿Fusionar estos registros?')">
+      <select name="conservar"><option value="{{ x.a.id }}">Conservar A</option><option value="{{ x.b.id }}">Conservar B</option></select>
+      <input type="hidden" name="eliminar" value="{{ x.b.id }}" data-a="{{ x.a.id }}" data-b="{{ x.b.id }}">
+      <button class="btn sm">Fusionar</button></form></td></tr>
+  {% else %}<tr><td colspan="4" class="muted">No se detectaron posibles duplicados.</td></tr>{% endfor %}
+</table>
+</div>
+<script>
+document.querySelectorAll('form[action="/duplicados/fusionar"]').forEach(f => {
+  const sel = f.querySelector('select'), hid = f.querySelector('input[name=eliminar]');
+  sel.addEventListener('change', () => { hid.value = sel.value === hid.dataset.a ? hid.dataset.b : hid.dataset.a; });
+});
+</script>
+{% endblock %}

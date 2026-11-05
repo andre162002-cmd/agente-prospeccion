@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Importar{% endblock %}
+{% block content %}
+<h1>Importar empresas</h1>
+<div class="grid g2">
+<section class="card">
+  <form method="post" action="/importar" enctype="multipart/form-data" class="grid">
+    <label>Archivo CSV (separado por comas o punto y coma)<input type="file" name="archivo" accept=".csv,text/csv" required></label>
+    <label style="display:flex;gap:6px;align-items:center;flex-direction:row"><input type="checkbox" name="investigar" value="1" checked> Investigar sus sitios web y preparar mensajes</label>
+    <div><button class="btn">Importar</button> <a class="small" href="/importar/plantilla.csv">Descargar plantilla</a></div>
+  </form>
+</section>
+<section class="card small">
+  <h2>Reglas</h2>
+  <ul>
+    <li>Columna obligatoria: <code>nombre</code>. Recomendadas: sector, ciudad, sitio_web, telefono, correo, instagram.</li>
+    <li>Columna <code>fuente</code> obligatoria en cada fila (por ejemplo, “Feria Expo Gastronómica 2026”, “Referido de Juan”, “Directorio X con licencia”), y <code>url_fuente</code> si la fuente es pública.</li>
+    <li>Solo datos de contacto empresariales publicados o entregados por el negocio. No importes bases compradas sin autorización ni correos personales.</li>
+    <li>Las empresas en la lista de exclusión se ignoran.</li>
+    <li>Duplicados: si la empresa ya existe (mismo dominio, teléfono o nombre), solo se completan los datos que falten.</li>
+  </ul>
+</section>
+</div>
+{% endblock %}

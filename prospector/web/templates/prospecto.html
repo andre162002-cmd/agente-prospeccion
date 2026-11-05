@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% from "_macros.html" import score_pill %}
+{% block title %}{{ p.nombre }}{% endblock %}
+{% block content %}
+{% set fi = p.ficha or {} %}
+{% set det = p.puntaje_detalle or {} %}
+<div class="row" style="justify-content:space-between;align-items:flex-start">
+  <div>
+    <p class="tag" style="margin:0">P-{{ '%05d' % p.id }} · {{ offer.sector_name(p.sector) }} · {{ p.ciudad or 'ciudad no verificada' }}</p>
+    <h1>{{ p.nombre }} {{ score_pill(p) }}</h1>
+    <p class="muted" style="margin:4px 0 0">{{ p.clasificacion or 'Sin calificar' }} · Estado: <b>{{ p.estado_comercial }}</b>{% if p.excluido %} · <span style="color:var(--bad)">Excluido: {{ p.motivo_exclusion }}</span>{% endif %}</p>
+  </div>
+  <div class="row">
+    <form method="post" action="/prospectos/{{ p.id }}/investigar" class="row">
+      <select name="servicio"><option value="">Servicio actual</option>{% for sid, s in offer.services.items() %}<option value="{{ sid }}">{{ s.nombre }}</option>{% endfor %}</select>
+      <button class="btn sec">Investigar de nuevo</button>
+    </form>
+  </div>
+</div>
+
+{% if not puede_contactar %}<div class="note"><b>No contactar ahora:</b> {{ motivos|join(' ') }}</div>{% endif %}
+
+<div class="grid g2">
+<section class="card ficha">
+  <h2>Ficha comercial</h2>
+  {% if fi %}
+  <p><b>Empresa:</b> {{ fi.empresa }}</p>
+  <p><b>Qué hace:</b> {{ fi.que_hace }}</p>
+  <p><b>Oportunidad identificada:</b> {{ fi.oportunidad }}</p>
+  <p><b>Servicio recomendado:</b> {{ fi.servicio_nombre or offer.service_name(fi.servicio_recomendado) }}</p>
+  <p><b>Argumento comercial:</b> {{ fi.argumento_comercial }}</p>
+  <p><b>Contacto recomendado:</b> {{ fi.contacto_recomendado.detalle if fi.contacto_recomendado else '' }}{% if fi.contacto_recomendado and fi.contacto_recomendado.valor %}: {{ fi.contacto_recomendado.valor }}{% endif %}{% if p.contacto_nombre %} · Responsable: {{ p.contacto_nombre }} ({{ p.contacto_cargo or 'cargo no publicado' }}){% endif %}</p>
+  <p><b>Prioridad:</b> {{ fi.prioridad }}</p>
+  <p><b>Próximo paso:</b> {{ fi.proximo_paso }}</p>
+  {% if fi.necesidades_potenciales %}<p class="small muted">Otras necesidades potenciales por validar: {{ fi.necesidades_potenciales[1:]|join('; ') }}</p>{% endif %}
+  <p class="tag">Generada por: {{ fi.generado_por }}</p>
+  {% else %}<p class="muted">Aún sin ficha. Usa “Investigar de nuevo”.</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>Por qué tiene {{ p.puntaje|int if p.puntaje is not none else '–' }} puntos</h2>
+  {% for key, c in (det.criterios or {}).items() %}
+  <div class="crit"><div class="h"><span>{{ c.nombre }}</span><span class="score">{{ c.puntos }} / {{ c.peso|int }}</span></div>
+    <ul>{% for r in c.razones %}<li>{{ r }}</li>{% endfor %}</ul></div>
+  {% endfor %}
+  {% if det.nota %}<p class="small muted">{{ det.nota }} Servicio usado para ponderar: {{ offer.service_name(det.servicio_objetivo) }}.</p>{% endif %}
+</section>
+</div>
+
+<div class="grid g2">
+<section class="card">
+  <h2>Información general y de contacto</h2>
+  <dl class="kv">
+    <dt>Razón social</dt><dd>{{ p.razon_social or 'No disponible' }}</dd>
+    <dt>Actividad</dt><dd>{{ p.actividad or 'No disponible' }}</dd>
+    <dt>Dirección</dt><dd>{{ p.direccion or 'No disponible' }}</dd>
+    <dt>Sedes verificadas</dt><dd>{{ p.num_sedes or 1 }}</dd>
+    <dt>Tamaño</dt><dd>{{ p.tamano_estimado or 'No disponible' }} <span class="tag">estimado</span></dd>
+    <dt>Google</dt><dd>{% if p.rating %}{{ p.rating }} ★ · {{ p.num_resenas }} reseñas · {% endif %}{{ p.nivel_precio or 'precio no disponible' }}{% if p.google_maps_url %} · <a href="{{ p.google_maps_url }}" target="_blank" rel="noopener">ver ficha</a>{% endif %}</dd>
+    <dt>Sitio web</dt><dd>{% if p.sitio_web %}<a href="{{ p.sitio_web }}" target="_blank" rel="noopener">{{ p.sitio_web }}</a>{% else %}No disponible{% endif %}</dd>
+    <dt>Redes</dt><dd>{% for k in ['instagram','facebook','linkedin','tiktok'] %}{% if p[k] %}<a href="{{ p[k] }}" target="_blank" rel="noopener">{{ k|capitalize }}</a> {% endif %}{% endfor %}{% if not (p.instagram or p.facebook or p.linkedin or p.tiktok) %}No disponible{% endif %}</dd>
+    <dt>WhatsApp</dt><dd>{{ p.whatsapp or 'No disponible' }}</dd>
+    <dt>Teléfono</dt><dd>{{ p.telefono or 'No disponible' }}</dd>
+    <dt>Correo</dt><dd>{{ p.correo or 'No disponible' }}</dd>
+    <dt>Formulario</dt><dd>{% if p.formulario_contacto %}<a href="{{ p.formulario_contacto }}" target="_blank" rel="noopener">abrir</a>{% else %}No disponible{% endif %}</dd>
+    <dt>Responsable</dt><dd>{% if p.contacto_nombre %}{{ p.contacto_nombre }} – {{ p.contacto_cargo or 'cargo no publicado' }}{% if p.contacto_fuente_url %} · <a href="{{ p.contacto_fuente_url }}" target="_blank" rel="noopener">fuente</a>{% endif %}{% else %}No identificado en fuentes públicas{% endif %}</dd>
+    <dt>Descripción</dt><dd class="small">{{ p.descripcion or 'No disponible' }}</dd>
+    <dt>Investigado</dt><dd class="small">{{ p.fecha_investigacion }} · actualizado {{ p.fecha_actualizacion }}</dd>
+  </dl>
+  <details style="margin-top:10px"><summary>Corregir o completar datos</summary>
+    <form method="post" action="/prospectos/{{ p.id }}/actualizar" class="grid g3" style="margin-top:10px">
+      {% for k, l in [('razon_social','Razón social'),('direccion','Dirección'),('ciudad','Ciudad'),('sitio_web','Sitio web'),('telefono','Teléfono'),('whatsapp','WhatsApp'),('correo','Correo corporativo'),('instagram','Instagram (URL)'),('facebook','Facebook (URL)'),('linkedin','LinkedIn empresa (URL)'),('contacto_nombre','Nombre del responsable'),('contacto_cargo','Cargo')] %}
+      <label>{{ l }}<input name="{{ k }}" value="{{ p[k] or '' }}"></label>
+      {% endfor %}
+      <label>Fuente del dato<input name="fuente" placeholder="Ej.: Conversación en el local, tarjeta de presentación"></label>
+      <label>URL de la fuente (si es pública)<input name="url_fuente"></label>
+      <label style="grid-column:1/-1">Observaciones<textarea name="observaciones">{{ p.observaciones or '' }}</textarea></label>
+      <div><button class="btn">Guardar</button></div>
+    </form>
+    <p class="small muted">Solo registra datos de contacto empresariales publicados o entregados por el negocio. No registres correos personales deducidos.</p>
+  </details>
+</section>
+
+<section class="card">
+  <h2>Seguimiento comercial</h2>
+  <form method="post" action="/prospectos/{{ p.id }}/estado" class="row">
+    <label>Estado<select name="estado">{% for e in ESTADOS %}<option {{ 'selected' if e == p.estado_comercial }}>{{ e }}</option>{% endfor %}</select></label>
+    <label>Nota<input name="nota" placeholder="Opcional"></label>
+    <button class="btn">Actualizar estado</button>
+  </form>
+  <form method="post" action="/prospectos/{{ p.id }}/contacto" class="row" style="margin-top:12px">
+    <label>Canal<select name="canal">{% for c in ['whatsapp','visita','instagram','correo','llamada','linkedin','otro'] %}<option>{{ c }}</option>{% endfor %}</select></label>
+    <label>Resultado<select name="resultado">{% for r in ['sin respuesta','respondió','reunión agendada','no interesado'] %}<option>{{ r }}</option>{% endfor %}</select></label>
+    <label>Nota<input name="nota"></label>
+    <button class="btn sec">Registrar contacto</button>
+  </form>
+  <h3 style="margin-top:14px">Contactos registrados ({{ contactos|length }})</h3>
+  <ul class="small">{% for c in contactos %}<li>{{ c.fecha }} · {{ c.canal }} · {{ c.resultado }} {{ c.nota or '' }}</li>{% else %}<li class="muted">Ninguno.</li>{% endfor %}</ul>
+  <div class="row" style="margin-top:12px">
+    <form method="post" action="/prospectos/{{ p.id }}/excluir" class="row" onsubmit="return confirm('Se bloquearán todos sus datos de contacto para futuras búsquedas y mensajes. ¿Continuar?')">
+      <input name="motivo" value="Pidió no ser contactado"><button class="btn warn">Agregar a lista de exclusión</button>
+    </form>
+    <form method="post" action="/prospectos/{{ p.id }}/eliminar" onsubmit="return confirm('Se borrará este prospecto y toda su información. ¿Continuar?')"><button class="btn bad">Eliminar datos</button></form>
+  </div>
+</section>
+</div>
+
+<section class="card" id="mensajes">
+  <div class="row" style="justify-content:space-between">
+    <h2>Estrategia de contacto</h2>
+    <form method="post" action="/prospectos/{{ p.id }}/mensajes"><button class="btn sec">{{ 'Regenerar' if mensajes else 'Preparar' }} mensajes</button></form>
+  </div>
+  <p class="small muted">Los mensajes son borradores. Apruébalos, envíalos tú mismo por el canal correspondiente y márcalos como enviados para que quede el registro. El sistema no envía nada automáticamente.</p>
+  <div class="grid g2">
+  {% for m in mensajes if m.estado != 'descartado' %}
+    <div class="msg">
+      <div class="row" style="justify-content:space-between"><b>{{ CANALES.get(m.canal, m.canal) }}</b><span class="small estado-{{ m.estado }}">{{ m.estado }}</span></div>
+      <form method="post" action="/mensajes/{{ m.id }}/editar" class="grid">
+        <input type="hidden" name="origen" value="ficha">
+        {% if m.canal == 'correo' %}<input name="asunto" value="{{ m.asunto or '' }}">{% endif %}
+        <textarea name="cuerpo" rows="8" {{ 'readonly' if m.estado == 'enviado' }}>{{ m.cuerpo }}</textarea>
+        {% if m.estado != 'enviado' %}<div><button class="btn sm sec">Guardar cambios</button></div>{% endif %}
+      </form>
+      <div class="row">
+        {% if m.canal in ['whatsapp','correo','linkedin'] %}
+          {% if m.estado == 'borrador' %}<form method="post" action="/mensajes/{{ m.id }}/aprobar"><input type="hidden" name="origen" value="ficha"><button class="btn sm">Aprobar</button></form>{% endif %}
+          {% if m.estado == 'aprobado' %}<form method="post" action="/mensajes/{{ m.id }}/enviado"><input type="hidden" name="origen" value="ficha"><button class="btn sm">Marcar como enviado</button></form>{% endif %}
+        {% endif %}
+        {% if m.estado != 'enviado' %}<form method="post" action="/mensajes/{{ m.id }}/descartar"><input type="hidden" name="origen" value="ficha"><button class="btn sm sec">Descartar</button></form>{% endif %}
+        <span class="tag">{{ m.generado_por }} · {{ m.creado }}</span>
+      </div>
+    </div>
+  {% else %}<p class="muted">Sin mensajes. Se preparan automáticamente para prospectos de 60+ puntos, o con el botón de arriba.</p>{% endfor %}
+  </div>
+</section>
+
+<div class="grid g2">
+<section class="card">
+  <h2>Fuentes y evidencia ({{ evidencia|length }})</h2>
+  <div style="max-height:420px;overflow:auto">
+  <table>
+    <tr><th>Dato</th><th>Valor</th><th>Fuente</th><th>Confianza</th></tr>
+    {% for e in evidencia %}
+    <tr><td class="small">{{ e.campo }}</td><td class="small" style="overflow-wrap:anywhere">{{ e.valor[:160] if e.valor else '' }}</td>
+      <td class="small">{% if e.url %}<a href="{{ e.url }}" target="_blank" rel="noopener">{{ e.fuente }}</a>{% else %}{{ e.fuente }}{% endif %}<div class="tag">{{ e.fecha }}</div></td>
+      <td class="small">{{ e.confianza }}<div class="tag">{{ e.verificacion }}</div></td></tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% if sedes|length > 1 %}<h3 style="margin-top:12px">Sedes ({{ sedes|length }})</h3>
+  <ul class="small">{% for s in sedes %}<li>{{ s.direccion or s.nombre }}{% if s.maps_url %} · <a href="{{ s.maps_url }}" target="_blank" rel="noopener">mapa</a>{% endif %}</li>{% endfor %}</ul>{% endif %}
+</section>
+<section class="card">
+  <h2>Historial de investigación</h2>
+  <div style="max-height:420px;overflow:auto">
+  <ul class="small">{% for h in historial %}<li><span class="tag">{{ h.fecha }}</span> <b>{{ h.evento }}</b> {{ h.detalle or '' }}{% if h.corrida_id %} · <a href="/corridas/{{ h.corrida_id }}">corrida #{{ h.corrida_id }}</a>{% endif %}</li>{% endfor %}</ul>
+  </div>
+</section>
+</div>
+{% endblock %}

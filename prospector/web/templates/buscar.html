@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Buscar{% endblock %}
+{% block content %}
+<h1>Módulo de búsqueda</h1>
+{% if not settings.places_enabled %}
+<div class="flash err">La búsqueda automática necesita <code>GOOGLE_PLACES_API_KEY</code> en el archivo <code>.env</code>. Sin ella el agente no inventa resultados: las corridas terminarán con error. Mientras tanto puedes <a href="/importar">importar empresas</a> o <a href="/prospectos/nuevo">agregarlas a mano</a>.</div>
+{% endif %}
+<section class="card">
+  <form method="post" action="/buscar" class="grid">
+    <label>Instrucción para el agente
+      <textarea name="instruccion" required placeholder="Ej.: Encuentra 50 restaurantes independientes en Medellín que puedan necesitar consultoría de costos y rentabilidad"></textarea>
+    </label>
+    <div class="row"><button class="btn">Planificar y ejecutar</button>
+      <span class="muted small">El agente interpreta la instrucción, busca en Google Places, revisa los sitios web, califica, relaciona cada empresa con un servicio y prepara borradores. No envía nada.</span></div>
+  </form>
+  <details style="margin-top:10px"><summary>Ejemplos</summary>
+    <ul class="small">
+      <li>Encuentra 50 restaurantes independientes en Medellín que puedan necesitar consultoría de costos y rentabilidad.</li>
+      <li>Busca 30 empresas comerciales en Envigado y Sabaneta que puedan necesitar organización financiera.</li>
+      <li>Identifica cafeterías con varias sedes que puedan necesitar presupuestos y control de inventarios.</li>
+      <li>Investiga 100 empresas del sector gastronómico en Medellín y el Valle de Aburrá. Prioriza cafeterías y restaurantes independientes.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="tablewrap">
+  <table>
+    <tr><th>#</th><th>Instrucción</th><th>Estado</th><th>Nuevas</th><th>Calificadas</th><th>Creada</th></tr>
+    {% for r in runs %}
+    <tr><td><a href="/corridas/{{ r.id }}">{{ r.id }}</a></td><td>{{ r.instruccion }}</td><td>{{ r.estado }}</td>
+      <td>{{ r.reporte.empresas_nuevas if r.reporte else '' }}</td><td>{{ r.reporte.calificadas_total if r.reporte else '' }}</td>
+      <td class="small">{{ r.creada }}</td></tr>
+    {% else %}<tr><td colspan="6" class="muted">Sin corridas todavía.</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}

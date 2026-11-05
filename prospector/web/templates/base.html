@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Prospección{% endblock %} · {{ offer.brand.nombre }}</title>
+<link rel="stylesheet" href="/static/style.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="top"><div class="in">
+  <b>{{ offer.brand.nombre }} <span>· Agente comercial</span></b>
+  <nav>
+    {% for href, label in [("/", "Dashboard"), ("/buscar", "Buscar"), ("/prospectos", "Prospectos"), ("/mensajes", "Mensajes"), ("/duplicados", "Duplicados"), ("/importar", "Importar"), ("/cumplimiento", "Cumplimiento"), ("/configuracion", "Configuración")] %}
+    <a href="{{ href }}" class="{{ 'on' if (path == href or (href != '/' and path.startswith(href))) else '' }}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+</div></header>
+<main>
+{% if msg %}<div class="flash">{{ msg }}</div>{% endif %}
+{% if err %}<div class="flash err">{{ err }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Cumplimiento{% endblock %}
+{% block content %}
+{% set r = offer.contact_rules %}
+<h1>Protección de datos y control de contactos</h1>
+<div class="grid g2">
+<section class="card small">
+  <h2>Reglas activas (Ley 1581 de 2012)</h2>
+  <ul>
+    <li><b>Finalidad:</b> {{ r.finalidad }}</li>
+    <li><b>Minimización:</b> solo datos empresariales (nombre comercial, dirección, canales publicados por el negocio). No se recopilan datos sensibles ni se deducen correos personales.</li>
+    <li><b>Procedencia:</b> cada dato guarda fuente, URL, fecha, nivel de confianza y verificación.</li>
+    <li><b>Fuentes:</b> Google Places API (oficial), sitios web propios respetando robots.txt, cargas manuales con fuente declarada. No se hace scraping de Instagram, Facebook ni LinkedIn.</li>
+    <li><b>Frecuencia:</b> mínimo {{ r.dias_entre_contactos }} días entre contactos; máximo {{ r.max_intentos_sin_respuesta }} intentos sin respuesta.</li>
+    <li><b>Aprobación humana:</b> todo mensaje se aprueba y se envía manualmente. No hay envíos masivos.</li>
+    <li><b>Retención:</b> descartados se eliminan tras {{ r.dias_retencion_descartados }} días; prospectos nunca contactados, tras {{ r.dias_retencion_sin_contacto }} días sin actividad.</li>
+    <li><b>Derechos del titular:</b> si alguien pide no ser contactado, usa “Agregar a lista de exclusión” en su ficha; si pide borrar sus datos, usa “Eliminar datos”.</li>
+  </ul>
+  <form method="post" action="/cumplimiento/purgar" onsubmit="return confirm('Se eliminarán los prospectos que superan el plazo de retención. ¿Continuar?')"><button class="btn warn">Ejecutar purga de retención ahora</button></form>
+</section>
+<section class="card">
+  <h2>Agregar a la lista de exclusión</h2>
+  <form method="post" action="/cumplimiento/exclusion" class="grid">
+    <label>Tipo<select name="tipo"><option value="telefono">Teléfono / WhatsApp</option><option value="correo">Correo</option><option value="dominio">Dominio web</option><option value="nombre">Nombre de empresa</option><option value="place_id">Google place_id</option></select></label>
+    <label>Valor<input name="valor" required></label>
+    <label>Motivo<input name="motivo" value="Pidió no ser contactado"></label>
+    <div><button class="btn">Agregar</button></div>
+  </form>
+</section>
+</div>
+<section class="tablewrap">
+  <table><tr><th>Tipo</th><th>Valor</th><th>Motivo</th><th>Fecha</th><th></th></tr>
+  {% for e in exclusiones %}
+  <tr><td>{{ e.tipo }}</td><td>{{ e.valor }}</td><td>{{ e.motivo }}</td><td class="small">{{ e.fecha }}</td>
+    <td><form method="post" action="/cumplimiento/exclusion/{{ e.id }}/eliminar" onsubmit="return confirm('¿Retirar de la lista de exclusión?')"><button class="btn sm sec">Retirar</button></form></td></tr>
+  {% else %}<tr><td colspan="5" class="muted">La lista de exclusión está vacía.</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}
