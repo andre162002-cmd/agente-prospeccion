@@ -9,8 +9,10 @@ Solo necesitas hacer las partes 1 a 4 una vez. Después, para usar el agente, ba
 
 Python es el programa que hace funcionar el agente. Es gratuito.
 
-1. Entra a <https://www.python.org/downloads/>.
-2. Haz clic en el botón amarillo grande **"Download Python 3.x"**.
+1. Entra a <https://www.python.org/downloads/>. Usa **Python 3.13**: las versiones más nuevas (3.14, 3.15) todavía no
+   funcionan con todos los componentes. Si ya instalaste otra versión, no pasa nada: el archivo `iniciar`
+   instala la 3.13 por su cuenta.
+2. Haz clic en el botón amarillo grande **"Download Python"**.
 3. Abre el archivo que se descargó (está en tu carpeta **Descargas**).
 4. **Muy importante:** en la primera ventana del instalador, abajo, marca la casilla
    **"Add python.exe to PATH"**.
