@@ -10,7 +10,7 @@ echo  ==============================================
 echo.
 
 set PY=
-where py >nul 2>nul && set PY=py -3
+where py >nul 2>nul && set PY=py
 if not defined PY ( where python >nul 2>nul && set PY=python )
 if not defined PY (
   echo  [ERROR] No encuentro Python en este computador.
